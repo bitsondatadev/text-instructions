@@ -8,18 +8,22 @@ import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Function;
 import com.eclipsesource.v8.V8Object;
+import com.google.gson.Gson;
 import com.mapbox.services.api.directions.v5.models.LegStep;
 
+import us.brianolsen.instructions.util.V8Util;
+
 public class OSRMTextInstructions implements Closeable {
-	private static final String MODULE_NAME = "osrm-text-instructions";
-	private static final String RESOURCES_DIRECTORY = OSRMTextInstructions.class.getClassLoader().getResource("")
-			.getPath() + "/";
-	private static final String NODE_MODULES_DIRECTORY = RESOURCES_DIRECTORY + "node_modules/";
-	private static final String OSRM_TEXT_INSTRUCTIONS_MODULE_DIRECTORY = NODE_MODULES_DIRECTORY + MODULE_NAME + "/";
+	public static final String DEFAULT_VERSION = "v5";
+	public static final String DEFAULT_LANGUAGE = "en";
+	protected static final String MODULE_NAME = "osrm-text-instructions";
+	protected static final String NODE_MODULES_DIRECTORY = V8Util.RESOURCES_DIRECTORY + "node_modules/";
+	protected static final String OSRM_TEXT_INSTRUCTIONS_MODULE_DIRECTORY = NODE_MODULES_DIRECTORY + MODULE_NAME + "/";
+	protected static final Gson gson = new Gson();
 
 	private NodeJS nodeJS;
 	private V8Object osrmTextInstructions;
-	private String version = "v5";
+	private String version = DEFAULT_VERSION;
 
 	public V8 getRuntime() {
 		return nodeJS.getRuntime();
@@ -44,6 +48,7 @@ public class OSRMTextInstructions implements Closeable {
 
 	private void init() {
 		nodeJS = NodeJS.createNodeJS();
+
 		V8Function osrmModule = (V8Function) getNodeJS().require(new File(OSRM_TEXT_INSTRUCTIONS_MODULE_DIRECTORY));
 
 		V8Array parameters = new V8Array(osrmModule.getRuntime());
@@ -79,46 +84,51 @@ public class OSRMTextInstructions implements Closeable {
 	}
 
 	public String laneConfig(LegStep step) {
-		throw new UnsupportedOperationException("still needs to be implemented");
+		V8Object v8Step = V8Util.jsonStringToV8Object(getRuntime(), gson.toJson(step));
+		String laneConfig = (String) osrmTextInstructions.executeJSFunction("laneConfig", v8Step);
+
+		v8Step.release();
+		return laneConfig;
 	}
 
 	public String getWayName(String language, LegStep step, String options) {
-		throw new UnsupportedOperationException("still needs to be implemented");
+		V8Object v8Step = V8Util.jsonStringToV8Object(getRuntime(), gson.toJson(step));
+		V8Object v8Options = V8Util.jsonStringToV8Object(getRuntime(), options);
+		String wayName = (String) osrmTextInstructions.executeJSFunction("getWayName", language, v8Step, v8Options);
 
+		v8Options.release();
+		v8Step.release();
+		return wayName;
 	}
 
-	public String compile(String language, V8Object step, V8Object options) {
-		// FIXME take LegStep step from mapbox
-		return (String) osrmTextInstructions.executeJSFunction("compile", language, step, options);
-	}
+	public String compile(String language, LegStep step, String options) {
+		V8Object v8Step = V8Util.jsonStringToV8Object(getRuntime(), gson.toJson(step));
+		V8Object v8Options = V8Util.jsonStringToV8Object(getRuntime(), options);
+		String instruction = (String) osrmTextInstructions.executeJSFunction("compile", language, v8Step, v8Options);
 
-	public String compile(String language, LegStep step, V8Object options) {
-		throw new UnsupportedOperationException("still needs to be implemented");
+		v8Options.release();
+		v8Step.release();
+		return instruction;
+
 	}
 
 	public String grammarize(String language, String name, String grammar) {
-		throw new UnsupportedOperationException("still needs to be implemented");
-
+		return (String) osrmTextInstructions.executeJSFunction("grammarize", language, name, grammar);
 	}
 
 	public String tokenize(String language, String instruction, String tokens, String options) {
-		throw new UnsupportedOperationException("still needs to be implemented");
+		V8Object v8Tokens = V8Util.jsonStringToV8Object(getRuntime(), tokens);
+		V8Object v8Options = V8Util.jsonStringToV8Object(getRuntime(), options);
+		String tokenizedString = (String) osrmTextInstructions.executeJSFunction("tokenize", language, instruction,
+				v8Tokens, v8Options);
+
+		v8Options.release();
+		v8Tokens.release();
+		return tokenizedString;
 	}
 
 	public String getBestMatchingLanguage(String language) {
 		return (String) osrmTextInstructions.executeJSFunction("getBestMatchingLanguage", language);
 	}
 
-	// private static File createTemporaryScriptFile(final String script, final
-	// String name) throws IOException {
-	// File tempFile = File.createTempFile(name, ".js.tmp", new
-	// File(RESOURCES_DIRECTORY));
-	// PrintWriter writer = new PrintWriter(tempFile, "UTF-8");
-	// try {
-	// writer.print(script);
-	// } finally {
-	// writer.close();
-	// }
-	// return tempFile;
-	// }
 }

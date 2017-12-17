@@ -2,102 +2,225 @@ package us.brianolsen.instructions;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Rule;
+import org.junit.Assert;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
-import com.eclipsesource.v8.V8;
-import com.eclipsesource.v8.V8Object;
-import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.mapbox.services.api.directions.v5.models.IntersectionLanes;
 import com.mapbox.services.api.directions.v5.models.LegStep;
 import com.mapbox.services.api.directions.v5.models.StepIntersection;
 
 public class OSRMTextInstructionsTest extends BaseTest {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void testSanity() {
-		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions("v5")) {
-
-		}
+		OSRMTextInstructions textInstructions = new OSRMTextInstructions(VERSION);
+		textInstructions.close();
 	}
 
 	@Test
 	public void testBadLanguage() {
-		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions("v5")) {
-			assertEquals("en", textInstructions.getBestMatchingLanguage("yyyasdfasd"));
+		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions(VERSION)) {
+			assertEquals(LANGUAGE, textInstructions.getBestMatchingLanguage("yyyasdfasd"));
 		}
 	}
 
 	@Test
 	public void testBadVersion() {
-		thrown.expect(RuntimeException.class);
 		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions("yyy")) {
-
+			Assert.fail();
+		} catch (RuntimeException e) {
+			// exception should be thrown
 		}
 	}
 
 	@Test
 	public void testCapitalizeFirstLetter() {
-		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions("v5")) {
-			assertEquals("Mapbox", textInstructions.capitalizeFirstLetter("en", "mapbox"));
+		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions(VERSION)) {
+			assertEquals("Mapbox", textInstructions.capitalizeFirstLetter(LANGUAGE, "mapbox"));
 		}
 	}
 
 	@Test
 	public void testOrdinalize() {
-		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions("v5")) {
-			assertEquals("1st", textInstructions.ordinalize("en", 1));
-			assertEquals("", textInstructions.ordinalize("en", 999));
+		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions(VERSION)) {
+			assertEquals("1st", textInstructions.ordinalize(LANGUAGE, 1));
+			assertEquals("", textInstructions.ordinalize(LANGUAGE, 999));
+		}
+	}
+
+	@Test
+	public void testGetWayName() {
+		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions(VERSION)) {
+			LegStep step = new LegStep();
+			String wayName = "North Michigan Ave.";
+			step.setName(wayName);
+			assertEquals(wayName, textInstructions.getWayName(LANGUAGE, step, "{}"));
+		}
+	}
+
+	@Test
+	public void testGrammarize() {
+		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions(VERSION)) {
+			assertEquals("Бармалееву улицу", textInstructions.grammarize("ru", "Бармалеева улица", "accusative"));
+			assertEquals("Бармалеевой улице", textInstructions.grammarize("ru", "Бармалеева улица", "dative"));
+			assertEquals("Бармалеевой улицы", textInstructions.grammarize("ru", "Бармалеева улица", "genitive"));
+			assertEquals("Бармалеевой улице", textInstructions.grammarize("ru", "Бармалеева улица", "prepositional"));
+			assertEquals("Большую Монетную улицу",
+					textInstructions.grammarize("ru", "Большая Монетная улица", "accusative"));
+			assertEquals("Большой Монетной улице",
+					textInstructions.grammarize("ru", "Большая Монетная улица", "dative"));
+			assertEquals("Большой Монетной улицы",
+					textInstructions.grammarize("ru", "Большая Монетная улица", "genitive"));
+			assertEquals("Большой Монетной улице",
+					textInstructions.grammarize("ru", "Большая Монетная улица", "prepositional"));
+			assertEquals("Малую Зеленину улицу",
+					textInstructions.grammarize("ru", "Малая Зеленина улица", "accusative"));
+			assertEquals("Малой Зелениной улице", textInstructions.grammarize("ru", "Малая Зеленина улица", "dative"));
+			assertEquals("Малой Зелениной улицы",
+					textInstructions.grammarize("ru", "Малая Зеленина улица", "genitive"));
+			assertEquals("Малой Зелениной улице",
+					textInstructions.grammarize("ru", "Малая Зеленина улица", "prepositional"));
+			assertEquals("22-23-ю линии В.О.", textInstructions.grammarize("ru", "22-23-я линии В.О.", "accusative"));
+			assertEquals("22-23-й линиям В.О.", textInstructions.grammarize("ru", "22-23-я линии В.О.", "dative"));
+			assertEquals("22-23-й линий В.О.", textInstructions.grammarize("ru", "22-23-я линии В.О.", "genitive"));
+			assertEquals("22-23-й линиях В.О.",
+					textInstructions.grammarize("ru", "22-23-я линии В.О.", "prepositional"));
+			assertEquals("Австрийскую площадь", textInstructions.grammarize("ru", "Австрийская площадь", "accusative"));
+			assertEquals("Австрийской площади", textInstructions.grammarize("ru", "Австрийская площадь", "dative"));
+			assertEquals("Австрийской площади", textInstructions.grammarize("ru", "Австрийская площадь", "genitive"));
+			assertEquals("Австрийской площади",
+					textInstructions.grammarize("ru", "Австрийская площадь", "prepositional"));
+			assertEquals("Лялину площадь", textInstructions.grammarize("ru", "Лялина площадь", "accusative"));
+			assertEquals("Лялиной площади", textInstructions.grammarize("ru", "Лялина площадь", "dative"));
+			assertEquals("Лялиной площади", textInstructions.grammarize("ru", "Лялина площадь", "genitive"));
+			assertEquals("Лялиной площади", textInstructions.grammarize("ru", "Лялина площадь", "prepositional"));
+			assertEquals("1-й Тверской-Ямской переулок",
+					textInstructions.grammarize("ru", "1-й Тверской-Ямской переулок", "accusative"));
+			assertEquals("1-му Тверскому-Ямскому переулку",
+					textInstructions.grammarize("ru", "1-й Тверской-Ямской переулок", "dative"));
+			assertEquals("1-го Тверского-Ямского переулка",
+					textInstructions.grammarize("ru", "1-й Тверской-Ямской переулок", "genitive"));
+			assertEquals("1-м Тверском-Ямском переулке",
+					textInstructions.grammarize("ru", "1-й Тверской-Ямской переулок", "prepositional"));
+			assertEquals("Большой Сампсониевский проспект",
+					textInstructions.grammarize("ru", "Большой Сампсониевский проспект", "accusative"));
+			assertEquals("Большому Сампсониевскому проспекту",
+					textInstructions.grammarize("ru", "Большой Сампсониевский проспект", "dative"));
+			assertEquals("Большого Сампсониевского проспекта",
+					textInstructions.grammarize("ru", "Большой Сампсониевский проспект", "genitive"));
+			assertEquals("Большом Сампсониевском проспекте",
+					textInstructions.grammarize("ru", "Большой Сампсониевский проспект", "prepositional"));
+			assertEquals("Нижний Лебяжий мост", textInstructions.grammarize("ru", "Нижний Лебяжий мост", "accusative"));
+			assertEquals("Нижнему Лебяжьему мосту", textInstructions.grammarize("ru", "Нижний Лебяжий мост", "dative"));
+			assertEquals("Нижнего Лебяжьего моста",
+					textInstructions.grammarize("ru", "Нижний Лебяжий мост", "genitive"));
+			assertEquals("Нижнем Лебяжьем мосту",
+					textInstructions.grammarize("ru", "Нижний Лебяжий мост", "prepositional"));
+			assertEquals("Старо-Калинкин мост", textInstructions.grammarize("ru", "Старо-Калинкин мост", "accusative"));
+			assertEquals("Старо-Калинкину мосту", textInstructions.grammarize("ru", "Старо-Калинкин мост", "dative"));
+			assertEquals("Старо-Калинкина моста", textInstructions.grammarize("ru", "Старо-Калинкин мост", "genitive"));
+			assertEquals("Старо-Калинкином мосту",
+					textInstructions.grammarize("ru", "Старо-Калинкин мост", "prepositional"));
+			assertEquals("Тучков мост", textInstructions.grammarize("ru", "Тучков мост", "accusative"));
+			assertEquals("Тучкову мосту", textInstructions.grammarize("ru", "Тучков мост", "dative"));
+			assertEquals("Тучкова моста", textInstructions.grammarize("ru", "Тучков мост", "genitive"));
+			assertEquals("Тучковом мосту", textInstructions.grammarize("ru", "Тучков мост", "prepositional"));
+			assertEquals("Пыхов-Церковный проезд",
+					textInstructions.grammarize("ru", "Пыхов-Церковный проезд", "accusative"));
+			assertEquals("Пыхову-Церковному проезду",
+					textInstructions.grammarize("ru", "Пыхов-Церковный проезд", "dative"));
+			assertEquals("Пыхова-Церковного проезда",
+					textInstructions.grammarize("ru", "Пыхов-Церковный проезд", "genitive"));
+			assertEquals("Пыховом-Церковном проезде",
+					textInstructions.grammarize("ru", "Пыхов-Церковный проезд", "prepositional"));
+			assertEquals("Третье Транспортное кольцо",
+					textInstructions.grammarize("ru", "Третье Транспортное кольцо", "accusative"));
+			assertEquals("Третьему Транспортному кольцу",
+					textInstructions.grammarize("ru", "Третье Транспортное кольцо", "dative"));
+			assertEquals("Третьего Транспортного кольца",
+					textInstructions.grammarize("ru", "Третье Транспортное кольцо", "genitive"));
+			assertEquals("Третьем Транспортном кольце",
+					textInstructions.grammarize("ru", "Третье Транспортное кольцо", "prepositional"));
+		}
+	}
+
+	@Test
+	public void testTokenize() {
+		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions(VERSION)) {
+
+			String tokenString = "Can {first} {second}";
+			String options = "{}";
+
+			JsonObject hasBoth = new JsonObject();
+			hasBoth.addProperty("first", "osrm");
+			hasBoth.addProperty("second", "do routing");
+
+			assertEquals("Can osrm do routing",
+					textInstructions.tokenize(LANGUAGE, tokenString, hasBoth.toString(), options));
+
+			JsonObject hasFirst = new JsonObject();
+			hasFirst.addProperty("first", "osrm");
+			hasFirst.addProperty("second", "");
+
+			assertEquals("Can osrm ", textInstructions.tokenize(LANGUAGE, tokenString, hasFirst.toString(), options));
+
+			JsonObject hasSecond = new JsonObject();
+			hasSecond.addProperty("first", "");
+			hasSecond.addProperty("second", "swim");
+
+			assertEquals("Can swim", textInstructions.tokenize(LANGUAGE, tokenString, hasSecond.toString(), options));
+
+			JsonObject missingSecond = new JsonObject();
+			missingSecond.addProperty("first", "osrm");
+
+			assertEquals("Can osrm {second}",
+					textInstructions.tokenize(LANGUAGE, tokenString, missingSecond.toString(), options));
 		}
 	}
 
 	@Test
 	public void testValidDirectionFromDegree() {
-		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions("v5")) {
-			assertEquals("", textInstructions.directionFromDegree("en", null));
-			assertEquals("north", textInstructions.directionFromDegree("en", 0.));
-			assertEquals("north", textInstructions.directionFromDegree("en", 1.));
-			assertEquals("north", textInstructions.directionFromDegree("en", 20.));
-			assertEquals("northeast", textInstructions.directionFromDegree("en", 21.));
-			assertEquals("northeast", textInstructions.directionFromDegree("en", 69.));
-			assertEquals("east", textInstructions.directionFromDegree("en", 70.));
-			assertEquals("east", textInstructions.directionFromDegree("en", 110.));
-			assertEquals("southeast", textInstructions.directionFromDegree("en", 111.));
-			assertEquals("southeast", textInstructions.directionFromDegree("en", 159.));
-			assertEquals("south", textInstructions.directionFromDegree("en", 160.));
-			assertEquals("south", textInstructions.directionFromDegree("en", 200.));
-			assertEquals("southwest", textInstructions.directionFromDegree("en", 201.));
-			assertEquals("southwest", textInstructions.directionFromDegree("en", 249.));
-			assertEquals("west", textInstructions.directionFromDegree("en", 250.));
-			assertEquals("west", textInstructions.directionFromDegree("en", 290.));
-			assertEquals("northwest", textInstructions.directionFromDegree("en", 291.));
-			assertEquals("northwest", textInstructions.directionFromDegree("en", 339.));
-			assertEquals("north", textInstructions.directionFromDegree("en", 340.));
-			assertEquals("north", textInstructions.directionFromDegree("en", 360.));
+		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions(VERSION)) {
+			assertEquals("", textInstructions.directionFromDegree(LANGUAGE, null));
+			assertEquals("north", textInstructions.directionFromDegree(LANGUAGE, 0.));
+			assertEquals("north", textInstructions.directionFromDegree(LANGUAGE, 1.));
+			assertEquals("north", textInstructions.directionFromDegree(LANGUAGE, 20.));
+			assertEquals("northeast", textInstructions.directionFromDegree(LANGUAGE, 21.));
+			assertEquals("northeast", textInstructions.directionFromDegree(LANGUAGE, 69.));
+			assertEquals("east", textInstructions.directionFromDegree(LANGUAGE, 70.));
+			assertEquals("east", textInstructions.directionFromDegree(LANGUAGE, 110.));
+			assertEquals("southeast", textInstructions.directionFromDegree(LANGUAGE, 111.));
+			assertEquals("southeast", textInstructions.directionFromDegree(LANGUAGE, 159.));
+			assertEquals("south", textInstructions.directionFromDegree(LANGUAGE, 160.));
+			assertEquals("south", textInstructions.directionFromDegree(LANGUAGE, 200.));
+			assertEquals("southwest", textInstructions.directionFromDegree(LANGUAGE, 201.));
+			assertEquals("southwest", textInstructions.directionFromDegree(LANGUAGE, 249.));
+			assertEquals("west", textInstructions.directionFromDegree(LANGUAGE, 250.));
+			assertEquals("west", textInstructions.directionFromDegree(LANGUAGE, 290.));
+			assertEquals("northwest", textInstructions.directionFromDegree(LANGUAGE, 291.));
+			assertEquals("northwest", textInstructions.directionFromDegree(LANGUAGE, 339.));
+			assertEquals("north", textInstructions.directionFromDegree(LANGUAGE, 340.));
+			assertEquals("north", textInstructions.directionFromDegree(LANGUAGE, 360.));
 		}
 	}
 
 	@Test
 	public void testInvalidDirectionFromDegree() {
-		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions("v5")) {
-			thrown.expect(RuntimeException.class);
-			assertEquals("", textInstructions.directionFromDegree("en", 361.));
+		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions(VERSION)) {
+			assertEquals("", textInstructions.directionFromDegree(LANGUAGE, 361.));
+		} catch (RuntimeException e) {
+			// exception should be thrown
 		}
 	}
 
-	// @Test FIXME serialize LegStep -> V8Object
+	@Test
 	public void testLaneDiagram() {
-		thrown.expect(RuntimeException.class);
-		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions("v5")) {
+		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions(VERSION)) {
 			Map<String, LegStep> map = new HashMap<>();
 
 			map.put("o", new LegStep(Collections.singletonList(new StepIntersection(new IntersectionLanes[] {
@@ -122,73 +245,18 @@ public class OSRMTextInstructionsTest extends BaseTest {
 					new IntersectionLanes(false), new IntersectionLanes(false), new IntersectionLanes(false) }))));
 
 			for (Object entry : map.entrySet()) {
-				Map.Entry pair = (Map.Entry) entry;
+				Map.Entry<String, LegStep> pair = (Map.Entry<String, LegStep>) entry;
 				assertEquals(pair.getKey(), textInstructions.laneConfig((LegStep) pair.getValue()));
 			}
 		}
 	}
 
-	// @Test FIXME see above
+	@Test
 	public void testInvalidLaneDiagram() {
-		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions("v5")) {
-			thrown.expect(RuntimeException.class);
+		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions(VERSION)) {
 			assertEquals("", textInstructions.laneConfig(
 					new LegStep(Collections.singletonList(new StepIntersection(new IntersectionLanes[] {})))));
 		}
 	}
 
-	// @Test FIXME
-	public void testFixturesMatchGeneratedInstructions() throws IOException {
-		for (String fixture : TextInstructionsFixtures.FIXTURES) {
-			String body = loadJsonFixture(fixture);
-			FixtureModel model = new Gson().fromJson(body, FixtureModel.class);
-			for (Object entry : model.getInstructions().entrySet()) {
-				try (OSRMTextInstructions textInstructions = new OSRMTextInstructions("v5")) {
-					Map.Entry pair = (Map.Entry) entry;
-					String language = (String) pair.getKey();
-					String compiled = (String) pair.getValue();
-					assertEquals(compiled, textInstructions.compile(language, model.getStep(), null));
-				}
-			}
-		}
-	}
-
-	@Test
-	public void testGeneratedInstructionUsingJ2V8() {
-		try (OSRMTextInstructions textInstructions = new OSRMTextInstructions("v5");) {
-			String language = textInstructions.getBestMatchingLanguage("en");
-			V8 runtime = textInstructions.getRuntime();
-
-			// LegStep object
-			V8Object step = new V8Object(runtime);
-			V8Object maneuver = new V8Object(runtime);
-			V8Object options = new V8Object(runtime);
-			maneuver.add("type", "arrive");
-			maneuver.add("modifier", "right");
-			step.add("maneuver", maneuver);
-			step.add("name", "Way Name");
-			step.add("destinations", "Destination 1,Destination 2");
-
-			String instruction = textInstructions.compile(language, step, options);
-
-			assertEquals("You have arrived at your destination, on the right", instruction);
-
-			options.release();
-			maneuver.release();
-			step.release();
-		}
-	}
-
-	private class FixtureModel {
-		private LegStep step;
-		private Map<String, String> instructions;
-
-		public LegStep getStep() {
-			return step;
-		}
-
-		public Map<String, String> getInstructions() {
-			return instructions;
-		}
-	}
 }
