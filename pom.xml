@@ -2,20 +2,44 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.project.osrm</groupId>
+	<groupId>com.github.brianolsen87</groupId>
 	<artifactId>text-instructions</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.11.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>text-instructions</name>
-	<url>http://maven.apache.org</url>
+	<name>OSRM Text Instructions - Java J2V8 Wrapper</name>
+	<url>https://github.com/brianolsen87/text-instructions</url>
+	<description>Open source library that wraps Projects OSRM text instructions node library using J2V8 to compile map direction instructions on the Java JVM.</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<j2v8.version>4.5.0</j2v8.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<skipTests>true</skipTests>
 	</properties>
+
+	<licenses>
+		<license>
+			<name>The BSD 2-Clause License</name>
+			<url>http://opensource.org/licenses/BSD-2-Clause</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Brian Olsen</name>
+			<organization>Open Source</organization>
+			<organizationUrl>http://www.brianolsen.us</organizationUrl>
+		</developer>
+	</developers>
+
+
+	<scm>
+		<connection>scm:git:git://github.com/brianolsen87/text-instructions.git</connection>
+		<developerConnection>scm:git:ssh://github.com:brianolsen87/text-instructions.git</developerConnection>
+		<url>https://github.com/brianolsen87/text-instructions</url>
+	</scm>
 
 	<repositories>
 		<repository>
@@ -26,6 +50,7 @@
 			</releases>
 		</repository>
 	</repositories>
+
 
 	<profiles>
 		<profile>
@@ -133,4 +158,73 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
+		</plugins>
+
+	</build>
+
 </project>

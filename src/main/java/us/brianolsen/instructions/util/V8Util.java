@@ -11,8 +11,6 @@ import com.eclipsesource.v8.V8Value;
 
 public class V8Util {
 
-	public static final String RESOURCES_DIRECTORY = new File("src/main/resources/").getAbsolutePath() + "/";
-
 	public static void add(V8Object object, String key, Integer value) {
 		if (value != null) {
 			object.add(key, value);
@@ -91,7 +89,7 @@ public class V8Util {
 	}
 
 	public static File createTemporaryScriptFile(final String script, final String name) throws IOException {
-		File tempFile = File.createTempFile(name, ".js.tmp", new File(RESOURCES_DIRECTORY));
+		File tempFile = File.createTempFile(name, ".js.tmp", new File(ResourceUtil.RESOURCES_DIRECTORY));
 		PrintWriter writer = new PrintWriter(tempFile, "UTF-8");
 		try {
 			writer.print(script);

@@ -9,8 +9,6 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
-import us.brianolsen.instructions.util.V8Util;
-
 public class OSRMTextInstructionsFixturesTest extends BaseTest {
 	protected static final String FIXTURES_DIRECTORY = OSRMTextInstructions.OSRM_TEXT_INSTRUCTIONS_MODULE_DIRECTORY
 			+ "test/fixtures/" + VERSION + "/";
@@ -129,7 +127,7 @@ public class OSRMTextInstructionsFixturesTest extends BaseTest {
 		File folder = new File(FIXTURES_DIRECTORY + fixture);
 		for (File fixtureFile : folder.listFiles()) {
 
-			String body = loadJsonFixture(fixtureFile.getPath().replaceFirst(V8Util.RESOURCES_DIRECTORY, ""));
+			String body = loadJsonFixture(fixtureFile.getPath().replaceFirst(RESOURCES_DIRECTORY, ""));
 			FixtureModel model = new Gson().fromJson(body, FixtureModel.class);
 			System.out.println(fixture + ":" + fixtureFile.getName());
 			for (Object entry : model.getInstructions().entrySet()) {

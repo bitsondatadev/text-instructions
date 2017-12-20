@@ -8,13 +8,13 @@ import java.util.Map;
 import com.google.gson.JsonParser;
 import com.mapbox.services.api.directions.v5.models.LegStep;
 
-import us.brianolsen.instructions.util.V8Util;
+import us.brianolsen.instructions.util.ResourceUtil;
 
 public class BaseTest {
 	protected static final double DELTA = 1E-10;
 	protected static final String VERSION = OSRMTextInstructions.DEFAULT_VERSION;
 	protected static final String LANGUAGE = OSRMTextInstructions.DEFAULT_LANGUAGE;
-	protected static final String RESOURCES_DIRECTORY = V8Util.RESOURCES_DIRECTORY;
+	protected static final String RESOURCES_DIRECTORY = ResourceUtil.RESOURCES_DIRECTORY;
 
 	protected String loadJsonFixture(String filename) {
 		String body = "";
