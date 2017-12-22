@@ -2,7 +2,6 @@ package us.brianolsen.instructions;
 
 import java.io.Closeable;
 import java.io.File;
-import java.net.URISyntaxException;
 
 import com.eclipsesource.v8.NodeJS;
 import com.eclipsesource.v8.V8;
@@ -12,14 +11,14 @@ import com.eclipsesource.v8.V8Object;
 import com.google.gson.Gson;
 import com.mapbox.services.api.directions.v5.models.LegStep;
 
+import us.brianolsen.instructions.util.ResourceUtil;
 import us.brianolsen.instructions.util.V8Util;
 
 public class OSRMTextInstructions implements Closeable {
-	public static final String DEFAULT_VERSION = "v5";
-	public static final String DEFAULT_LANGUAGE = "en";
+	protected static final String DEFAULT_VERSION = "v5";
+	protected static final String DEFAULT_LANGUAGE = "en";
 	protected static final String MODULE_NAME = "osrm-text-instructions";
-	protected static final String NODE_MODULES_DIRECTORY = "/node_modules/";
-	protected static final String OSRM_TEXT_INSTRUCTIONS_MODULE_DIRECTORY = NODE_MODULES_DIRECTORY + MODULE_NAME + "/";
+	protected static final String MODULE_VERSION = "0.11.0";
 	protected static final Gson gson = new Gson();
 
 	private NodeJS nodeJS;
@@ -50,13 +49,7 @@ public class OSRMTextInstructions implements Closeable {
 	private void init() {
 		nodeJS = NodeJS.createNodeJS();
 
-		File directory = null;
-		try {
-			directory = new File(getClass().getResource(OSRM_TEXT_INSTRUCTIONS_MODULE_DIRECTORY).toURI());
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		File directory = ResourceUtil.getNodeModuleDirectory(MODULE_NAME, MODULE_VERSION);
 		V8Function osrmModule = (V8Function) getNodeJS().require(directory);
 
 		V8Array parameters = new V8Array(osrmModule.getRuntime());
