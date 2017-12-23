@@ -1,6 +1,6 @@
 # OSRM Text Instructions - Java J2V8 Wrapper
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.eclipsesource.j2v8/j2v8_win32_x86.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.brianolsen87%22)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.brianolsen87/text-instructions.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.brianolsen87%22)
 
 This library wraps javascript functions from the [OSRM Text Instructions](https://github.com/Project-OSRM/osrm-text-instructions) library that is programmed in javascript as a java project. The osrm-text-instructions library uses the [MapBox LegStep](https://www.mapbox.com/android-docs/api/mapbox-java/libjava-services/2.2.9/com/mapbox/services/api/directions/v5/models/LegStep.html) to model the routes and compiles human readable instructions on how to follow the next direction on a route. I had the need and idea to port the node module by running a V8 instance on the JVM using the wonderful [J2V8 library](https://github.com/eclipsesource/J2V8) and allowing direct calls to the main javascript library from Java. This will make keeping up the development simple as new functionality arises. 
 
