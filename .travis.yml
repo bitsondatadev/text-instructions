@@ -1,3 +1,5 @@
 language: java
+#ignore install step
+install: true
 sudo: false
 script: mvn clean install -Dmaven.javadoc.skip=true -DskipTests=false -Dgpg.skip=true
