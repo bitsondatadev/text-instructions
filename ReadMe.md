@@ -1,6 +1,7 @@
 # OSRM Text Instructions - Java J2V8 Wrapper
-
+<!--
 [![Build Status](https://travis-ci.org/brianolsen87/text-instructions.svg?branch=master)](https://travis-ci.org/brianolsen87/text-instructions)
+--->
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.brianolsen87/text-instructions.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.brianolsen87%22)
 
