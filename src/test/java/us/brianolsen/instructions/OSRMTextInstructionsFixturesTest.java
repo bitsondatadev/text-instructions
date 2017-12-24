@@ -1,118 +1,125 @@
 package us.brianolsen.instructions;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-//Only test specific fixtures in interest of avoiding too many files open bug until a solution is found.
 public class OSRMTextInstructionsFixturesTest extends BaseTest {
+	private static OSRMTextInstructions osrmTextInstructions;
+
+	@BeforeClass
+	public static void setupClass() {
+		osrmTextInstructions = new OSRMTextInstructions(VERSION);
+	}
+
+	@AfterClass
+	public static void teardownClass() {
+		osrmTextInstructions.close();
+	}
 
 	@Test
 	public void testFixturesMatchGeneratedArriveInstructions() {
-		testFixture("arrive");
+		testFixture("arrive", osrmTextInstructions);
 	}
 
-	// // @Test fails
-	// public void testFixturesMatchGeneratedArriveWaypointInstructions() {
-	// testFixture("arrive_waypoint");
-	// }
-	//
-	// @Test
-	// public void testFixturesMatchGeneratedArriveWaypointLastInstructions() {
-	// testFixture("arrive_waypoint_last");
-	// }
-	//
-	// // @Test fails
-	// public void testFixturesMatchGeneratedContinueInstructions() {
-	// testFixture("continue");
-	// }
+	// @Test fails due to mismatching expected (from parent project)
+	public void testFixturesMatchGeneratedArriveWaypointInstructions() {
+		testFixture("arrive_waypoint", osrmTextInstructions);
+	}
+
+	@Test
+	public void testFixturesMatchGeneratedArriveWaypointLastInstructions() {
+		testFixture("arrive_waypoint_last", osrmTextInstructions);
+	}
+
+	// @Test fails due to mismatching expected (from parent project)
+	public void testFixturesMatchGeneratedContinueInstructions() {
+		testFixture("continue", osrmTextInstructions);
+	}
 
 	@Test
 	public void testFixturesMatchGeneratedDepartInstructions() {
-		testFixture("depart");
+		testFixture("depart", osrmTextInstructions);
 	}
 
-	// @Test
-	// public void testFixturesMatchGeneratedEndOfRoadInstructions() {
-	// testFixture("end_of_road");
-	// }
-	//
-	// @Test
-	// public void testFixturesMatchGeneratedExitRotaryInstructions() {
-	// testFixture("exit_rotary");
-	// }
-	//
-	// @Test
-	// public void testFixturesMatchGeneratedExitRoundaboutInstructions() {
-	// testFixture("exit_roundabout");
-	// }
-	//
-	// @Test
-	// public void testFixturesMatchGeneratedForkInstructions() {
-	// testFixture("fork");
-	// }
-	//
-	// @Test
-	// public void testFixturesMatchGeneratedMergeInstructions() {
-	// testFixture("merge");
-	// }
-	//
-	// @Test
-	// public void testFixturesMatchGeneratedModesInstructions() {
-	// testFixture("modes");
-	// }
-	//
-	// @Test
-	// public void testFixturesMatchGeneratedNewNameInstructions() {
-	// testFixture("new_name");
-	// }
-	//
-	// @Test
-	// public void testFixturesMatchGeneratedNotificationInstructions() {
-	// testFixture("notification");
-	// }
-	//
-	// // @Test fail
-	// public void testFixturesMatchGeneratedOffRampInstructions() {
-	// testFixture("off_ramp");
-	// }
-	//
-	// @Test
-	// public void testFixturesMatchGeneratedOnRampInstructions() {
-	// testFixture("on_ramp");
-	// }
-	//
-	// // @Test fail
-	// public void testFixturesMatchGeneratedOtherInstructions() {
-	// testFixture("other");
-	// }
-	//
-	// @Test
-	// public void testFixturesMatchGeneratedPhraseInstructions() {
-	// testFixture("phrase");
-	// }
-	//
-	// @Test
-	// public void testFixturesMatchGeneratedRotaryInstructions() {
-	// testFixture("rotary");
-	// }
-	//
-	// @Test
-	// public void testFixturesMatchGeneratedRoundaboutInstructions() {
-	// testFixture("roundabout");
-	// }
-	//
-	// @Test
-	// public void testFixturesMatchGeneratedRoundaboutTurnInstructions() {
-	// testFixture("roundabout_turn");
-	// }
+	@Test
+	public void testFixturesMatchGeneratedEndOfRoadInstructions() {
+		testFixture("end_of_road", osrmTextInstructions);
+	}
+
+	@Test
+	public void testFixturesMatchGeneratedExitRotaryInstructions() {
+		testFixture("exit_rotary", osrmTextInstructions);
+	}
+
+	@Test
+	public void testFixturesMatchGeneratedExitRoundaboutInstructions() {
+		testFixture("exit_roundabout", osrmTextInstructions);
+	}
+
+	@Test
+	public void testFixturesMatchGeneratedForkInstructions() {
+		testFixture("fork", osrmTextInstructions);
+	}
+
+	@Test
+	public void testFixturesMatchGeneratedMergeInstructions() {
+		testFixture("merge", osrmTextInstructions);
+	}
+
+	@Test
+	public void testFixturesMatchGeneratedModesInstructions() {
+		testFixture("modes", osrmTextInstructions);
+	}
+
+	@Test
+	public void testFixturesMatchGeneratedNewNameInstructions() {
+		testFixture("new_name", osrmTextInstructions);
+	}
+
+	@Test
+	public void testFixturesMatchGeneratedNotificationInstructions() {
+		testFixture("notification", osrmTextInstructions);
+	}
+
+	// @Test fails due to mismatching expected (from parent project)
+	public void testFixturesMatchGeneratedOffRampInstructions() {
+		testFixture("off_ramp", osrmTextInstructions);
+	}
+
+	@Test
+	public void testFixturesMatchGeneratedOnRampInstructions() {
+		testFixture("on_ramp", osrmTextInstructions);
+	}
+
+	// @Test fails due to mismatching expected (from parent project)
+	public void testFixturesMatchGeneratedOtherInstructions() {
+		testFixture("other", osrmTextInstructions);
+	}
+
+	@Test
+	public void testFixturesMatchGeneratedRotaryInstructions() {
+		testFixture("rotary", osrmTextInstructions);
+	}
+
+	@Test
+	public void testFixturesMatchGeneratedRoundaboutInstructions() {
+		testFixture("roundabout", osrmTextInstructions);
+	}
+
+	@Test
+	public void testFixturesMatchGeneratedRoundaboutTurnInstructions() {
+		testFixture("roundabout_turn", osrmTextInstructions);
+	}
 
 	@Test
 	public void testFixturesMatchGeneratedTurnInstructions() {
-		testFixture("turn");
+		testFixture("turn", osrmTextInstructions);
 	}
 
-	// @Test
-	// public void testFixturesMatchGeneratedUseLaneInstructions() {
-	// testFixture("use_lane");
-	// }
+	@Test
+	public void testFixturesMatchGeneratedUseLaneInstructions() {
+		testFixture("use_lane", osrmTextInstructions);
+	}
 
 }

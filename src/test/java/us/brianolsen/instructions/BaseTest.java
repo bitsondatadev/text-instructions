@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mapbox.services.api.directions.v5.models.LegStep;
 
@@ -28,6 +29,8 @@ public class BaseTest {
 	public class FixtureModel {
 		private LegStep step;
 		private Map<String, String> instructions;
+		private JsonObject options;
+		private Map<String, String> phrases;
 
 		public LegStep getStep() {
 			return step;
@@ -35,6 +38,14 @@ public class BaseTest {
 
 		public Map<String, String> getInstructions() {
 			return instructions;
+		}
+
+		public JsonObject getOptions() {
+			return options;
+		}
+
+		public Map<String, String> getPhrases() {
+			return phrases;
 		}
 	}
 
@@ -53,24 +64,23 @@ public class BaseTest {
 		return body;
 	}
 
-	protected void testFixture(String fixture) {
+	protected void testFixture(String fixture, OSRMTextInstructions textInstructions) {
 		String fixtureDirectory = Paths.get(FIXTURES_DIRECTORY, fixture).toString();
 		File fixtureDirectoryFile = new File(fixtureDirectory);
 		for (File fixtureFile : fixtureDirectoryFile.listFiles()) {
 
 			String body = loadJsonFixture(fixtureFile.getAbsolutePath());
 			FixtureModel model = new Gson().fromJson(body, FixtureModel.class);
-			System.out.println(fixture + ":" + fixtureFile.getName());
-			for (Object entry : model.getInstructions().entrySet()) {
-				try (OSRMTextInstructions textInstructions = new OSRMTextInstructions(VERSION)) {
+			if (model.getInstructions() != null) {
+				for (Object entry : model.getInstructions().entrySet()) {
 					Map.Entry<String, String> pair = (Map.Entry<String, String>) entry;
 					String language = pair.getKey();
 					String compiled = pair.getValue();
 					assertEquals(compiled, textInstructions.compile(language, model.getStep(), null));
-				} catch (RuntimeException e) {
-					System.err.println(e);
 				}
+
 			}
+			System.out.println("Fixture test for " + fixture + " passed in file " + fixtureFile.getName());
 		}
 	}
 }
