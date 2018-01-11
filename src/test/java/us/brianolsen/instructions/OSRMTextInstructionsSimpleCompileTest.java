@@ -59,7 +59,7 @@ public class OSRMTextInstructionsSimpleCompileTest extends BaseTest {
 			maneuver.setModifier("sharp right");
 			step.setManeuver(maneuver);
 
-			assertEquals("Take a sharp right at the fork onto Route 66", textInstructions.compile("en", step, null));
+			assertEquals("Take a sharp right onto Route 66", textInstructions.compile("en", step, null));
 			assertEquals("Gire a la derecha en el cruce en Route 66", textInstructions.compile("es", step, null));
 			assertEquals("Svolta a destra al bivio in Route 66", textInstructions.compile("it", step, null));
 			assertEquals("Rechtsaf op de splitsing naar Route 66", textInstructions.compile("nl", step, null));
