@@ -18,7 +18,7 @@ public class OSRMTextInstructions implements Closeable {
 	protected static final String DEFAULT_VERSION = "v5";
 	protected static final String DEFAULT_LANGUAGE = "en";
 	protected static final String MODULE_NAME = "osrm-text-instructions";
-	protected static final String MODULE_VERSION = "0.11.1";
+	protected static final String MODULE_VERSION = "0.11.2";
 	protected static final Gson gson = new Gson();
 
 	private NodeJS nodeJS;
