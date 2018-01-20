@@ -3,3 +3,14 @@ language: java
 install: true
 sudo: false
 script: mvn clean install -Dmaven.javadoc.skip=true -DskipTests=false -Dgpg.skip=true
+before_deploy:
+      # Set up git user name and tag this commit
+      - git config --local user.name "Brian Olsen"
+      - git config --local user.email "b3t@brianolsen.us"
+      - git tag "$(mvn -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec -q)"
+deploy:
+  provider: releases
+  api_key: "$Github_Oath_Token"
+  skip_cleanup: true
+  on:
+    branch: master
