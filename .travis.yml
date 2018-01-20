@@ -3,14 +3,18 @@ language: java
 install: true
 sudo: false
 script: mvn clean install -Dmaven.javadoc.skip=true -DskipTests=false -Dgpg.skip=true
+env:
+  - POM_VERSION=$(mvn -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec -q)
 before_deploy:
       # Set up git user name and tag this commit
       - git config --local user.name "Brian Olsen"
       - git config --local user.email "b3t@brianolsen.us"
-      - git tag "$(mvn -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec -q)"
+      - git tag "$POM_VERSION"
 deploy:
   provider: releases
   api_key: "$Github_Oath_Token"
+  name: "$POM_VERSION"
+  body: "<dependency>\n  <groupId>com.github.brianolsen87</groupId>\n  <artifactId>text-instructions</artifactId>\n  <version>$POM_VERSION</version>\n</dependency>"
   skip_cleanup: true
   on:
     branch: master
