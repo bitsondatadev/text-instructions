@@ -14,7 +14,7 @@ deploy:
   provider: releases
   api_key: "$Github_Oath_Token"
   name: "$POM_VERSION"
-  body: "<dependency>\n  <groupId>com.github.brianolsen87</groupId>\n  <artifactId>text-instructions</artifactId>\n  <version>$POM_VERSION</version>\n</dependency>"
+  body: "Release that references [osrm-text-instructions v$POM_VERSION](https://github.com/Project-OSRM/osrm-text-instructions/releases/tag/v$POM_VERSION). Release is available on [maven common repository](http://search.maven.org/#artifactdetails%7Ccom.github.brianolsen87%7Ctext-instructions%7C$POM_VERSION%7Cjar)."
   skip_cleanup: true
   on:
     branch: master
